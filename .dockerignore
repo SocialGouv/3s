@@ -1,0 +1,8 @@
+.git
+.dockerignore
+Dockerfile
+README.md
+LICENSE
+Makefile
+3s
+charts

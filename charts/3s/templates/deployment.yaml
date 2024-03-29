@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: statefulscalerservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: statefulscalerservice
+  template:
+    metadata:
+      labels:
+        app: statefulscalerservice
+    spec:
+      serviceAccountName: statefulscalerservice-account
+      containers:
+        - name: statefulscalerservice
+          image: "{{ .Values.image.repository }}:{{ or .Values.image.tag "latest" }}"
+          {{ if .Values.image.pullPolicy }}
+          imagePullPolicy: "{{ .Values.image.tag }}"
+          {{ else if .Values.image.tag }}
+          imagePullPolicy: IfNotPresent
+          {{ else }}
+          imagePullPolicy: Always
+          {{ end }}
+          env:
+            - name: SSS_POD_SELECTOR
+              value: "{{ .Values.podSelector }}"
+            - name: SSS_SERVICE_SELECTOR
+              value: "{{ .Values.serviceSelector }}"
+            - name: SSS_SERVICE_PREFIX
+              value: "{{ .Values.servicePrefix }}"
+            - name: SSS_STATEFULSET_NAME_FORMAT
+              value: "{{ .Values.statefulsetNameFormat }}"
+            - name: SSS_DEFAULT_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

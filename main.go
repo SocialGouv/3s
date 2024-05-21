@@ -68,7 +68,18 @@ func updateServiceSelectors(clientset *kubernetes.Clientset, namespace, podSelec
 		return
 	}
 
-	podCount := len(pods.Items)
+	var readyPods []corev1.Pod
+	for _, pod := range pods.Items {
+		for _, cond := range pod.Status.Conditions {
+			if cond.Type == corev1.PodReady && cond.Status == corev1.ConditionTrue {
+				readyPods = append(readyPods, pod)
+				break
+			}
+		}
+	}
+
+	podCount := len(readyPods)
+
 	fmt.Printf("podCount: %d\n", podCount)
 	if podCount == 0 {
 		fmt.Println("No pods found, skipping service update")

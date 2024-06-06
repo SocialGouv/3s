@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strings"
@@ -28,7 +27,7 @@ func getEnv(key, fallback string) string {
 
 func getNamespace(defaultNamespace string) string {
 	namespacePath := "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
-	if data, err := ioutil.ReadFile(namespacePath); err == nil {
+	if data, err := os.ReadFile(namespacePath); err == nil {
 		if ns := string(data); ns != "" {
 			return ns
 		}
@@ -39,7 +38,6 @@ func getNamespace(defaultNamespace string) string {
 func updateServiceSelectors(clientset *kubernetes.Clientset, namespace, podSelector string) {
 	serviceSelector := getEnv("SSS_SERVICE_SELECTOR", "")
 	servicePrefix := getEnv("SSS_SERVICE_PREFIX", "svc-")
-	statefulSetNameFormat := getEnv("SSS_STATEFULSET_NAME_FORMAT", "my-statefulset-%d")
 
 	services, err := clientset.CoreV1().Services(namespace).List(context.TODO(), metav1.ListOptions{
 		LabelSelector: serviceSelector,
@@ -88,7 +86,7 @@ func updateServiceSelectors(clientset *kubernetes.Clientset, namespace, podSelec
 
 	for i, service := range filteredServices {
 		targetPodIndex := i % podCount
-		targetPodName := fmt.Sprintf(statefulSetNameFormat, targetPodIndex)
+		targetPodName := readyPods[targetPodIndex].Name
 
 		retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 			updatingService, getErr := clientset.CoreV1().Services(namespace).Get(context.TODO(), service.Name, metav1.GetOptions{})

@@ -30,8 +30,6 @@ spec:
               value: "{{ .Values.serviceSelector }}"
             - name: SSS_SERVICE_PREFIX
               value: "{{ .Values.servicePrefix }}"
-            - name: SSS_STATEFULSET_NAME_FORMAT
-              value: "{{ .Values.statefulsetNameFormat }}"
             - name: SSS_DEFAULT_NAMESPACE
               valueFrom:
                 fieldRef:

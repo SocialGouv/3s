@@ -35,7 +35,6 @@ Configure 3S using the following environment variables:
 
 * `SSS_POD_SELECTOR`: The label selector for the target StatefulSet pods. eg: `app.kubernetes.io/name=buildkit-service`
 * `SSS_SERVICE_PREFIX`: The service name prefix. eg: `svc-`
-* `SSS_STATEFULSET_NAME_FORMAT`: The naming format for pods within the StatefulSet.  eg: `buildkit-service-%d`
 * `SSS_SERVICE_SELECTOR`: The label selector for the services to be adjusted. Optional, the filter will be on SSS_SERVICE_PREFIX anyway.
 * `SSS_NAMESPACE`: The namespace where the operator and target StatefulSet reside. Optional, default to where the operator is deployed.
 
